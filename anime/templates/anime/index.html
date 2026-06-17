@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>マイアニメポートフォリオ</title>
+    <style>
+        body {
+            padding: 20px;
+            font-family: sans-serif;
+            background-color: #fafafa;
+        }
+
+        .scroll-container {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 20px;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        .anime-card {
+            flex: 0 0 auto;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .review-card {
+            border-color: #4CAF50;
+            background-color: #ffffff;
+        }
+
+        .anime-card img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    {% if not user.is_authenticated %}
+        <div style="background-color: #ffebee; color: #c62828; padding: 10px; margin-bottom: 20px; border-radius: 4px; font-weight: bold;">
+            ※評価を保存するには、あらかじめ http://127.0.0.1:8000/admin/ から管理者アカウントでログインしてください。
+        </div>
+    {% endif %}
+
+    {% if recommendations %}
+        <h1 style="color: #6a1b9a;">🤖 AIが選んだあなたへのおすすめ（今期＆名作から厳選）</h1>
+        <div class="scroll-container">
+            {% for rec in recommendations %}
+                <div class="anime-card" style="border-color: #9c27b0; background-color: #f3e5f5;">
+                    {% if rec.image_url %}
+                        <img src="{{ rec.image_url }}" alt="{{ rec.title_japanese }}">
+                    {% endif %}
+                    <h3 style="font-size: 1.1em; color: #6a1b9a; margin-top: 10px;">{{ rec.title_japanese }}</h3>
+                    <p style="font-size: 0.9em; line-height: 1.5;"><strong>💡 おすすめ理由:</strong><br>{{ rec.reason }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        <hr style="border: 1px solid #ccc; margin-bottom: 40px;">
+    {% endif %}
+
+    <h1>🌟 今期放送中のアニメ一覧</h1>
+    <div class="scroll-container">
+        {% for anime in anime_list %}
+            <div class="anime-card">
+                <img src="{{ anime.images.jpg.image_url }}" alt="{{ anime.title }}">
+                <h3 style="font-size: 1.1em; margin-top: 10px;">{{ anime.title_japanese|default:anime.title }}</h3>
+                <p style="margin: 5px 0;"><strong>スコア:</strong> {{ anime.score|default:"-" }}</p>
+                
+                <hr style="margin: 10px 0;">
+                
+                {% if user.is_authenticated %}
+                <form action="{% url 'save_review' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="mal_id" value="{{ anime.mal_id }}">
+                    <input type="hidden" name="title" value="{{ anime.title_japanese|default:anime.title }}">
+                    <input type="hidden" name="image_url" value="{{ anime.images.jpg.image_url }}">
+                    <input type="hidden" name="synopsis" value="{{ anime.synopsis }}">
+
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-size: 0.9em;">評価 (1-5):</label>
+                        <input type="number" name="user_rating" min="1" max="5" value="3" style="width: 100%; padding: 3px;" required>
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 8px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        マイリストに保存
+                    </button>
+                </form>
+                {% else %}
+                    <p style="color: #888; font-size: 0.9em; text-align: center;">評価するにはログインが必要です</p>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>データがありません。</p>
+        {% endfor %}
+    </div>
+
+    <h1 style="color: #e65100;">🏆 歴代の人気名作アニメ TOP 25</h1>
+    <div class="scroll-container">
+        {% for anime in top_anime_list %}
+            <div class="anime-card" style="border-color: #ff9800;">
+                <img src="{{ anime.images.jpg.image_url }}" alt="{{ anime.title }}">
+                <h3 style="font-size: 1.1em; margin-top: 10px;">{{ anime.title_japanese|default:anime.title }}</h3>
+                <p style="margin: 5px 0;"><strong>スコア:</strong> ⭐ {{ anime.score }}</p>
+                
+                <hr style="margin: 10px 0;">
+                
+                {% if user.is_authenticated %}
+                <form action="{% url 'save_review' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="mal_id" value="{{ anime.mal_id }}">
+                    <input type="hidden" name="title" value="{{ anime.title_japanese|default:anime.title }}">
+                    <input type="hidden" name="image_url" value="{{ anime.images.jpg.image_url }}">
+                    <input type="hidden" name="synopsis" value="{{ anime.synopsis }}">
+
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-size: 0.9em;">評価 (1-5):</label>
+                        <input type="number" name="user_rating" min="1" max="5" value="3" style="width: 100%; padding: 3px;" required>
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 8px; background-color: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        マイリストに保存
+                    </button>
+                </form>
+                {% else %}
+                    <p style="color: #888; font-size: 0.9em; text-align: center;">評価するにはログインが必要です</p>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>データがありません。</p>
+        {% endfor %}
+    </div>
+
+    <h1>マイ・アニメレビュー一覧</h1>
+    <div class="scroll-container">
+        {% for review in reviews %}
+            <div class="anime-card review-card">
+                {% if review.anime.image_url %}
+                    <img src="{{ review.anime.image_url }}" alt="{{ review.anime.title }}">
+                {% endif %}
+                <h3 style="margin-top: 10px;">{{ review.anime.title }}</h3>
+                <p><strong>あなたの評価:</strong> ★{{ review.rating }} / 5</p>
+                <p style="font-size: 0.8em; color: #666;">登録日: {{ review.created_at|date:"Y/m/d" }}</p>
+                <form action="{% url 'delete_review' review.id %}" method="POST" style="margin-top: 10px;" onsubmit="return confirm('「{{ review.anime.title }}」のレビューを本当に削除しますか？');">
+                    {% csrf_token %}
+                    <button type="submit" style="width: 100%; padding: 5px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        🗑️ 削除する
+                    </button>
+                </form>
+            </div>
+        {% empty %}
+            <p>まだレビューが登録されていません。上のリストから追加してみてね！</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
