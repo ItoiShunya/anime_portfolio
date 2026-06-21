@@ -5,6 +5,12 @@ from django.contrib.auth.decorators import login_required
 from .models import Anime, AnimeReview
 import requests
 from .services import analyze_anime_synopsis, generate_user_recommendations 
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+
+
+# ファイルの一番下に追加
 
 def index(request):
     # 1. Jikan APIから「今期放送中のアニメ」を取得
@@ -85,3 +91,20 @@ def delete_review(request, review_id):
             
     # 削除が終わったら、トップ画面（index）に戻る
     return redirect('index')
+
+def signup(request):
+    if request.method == 'POST':
+        # 送信されたデータでフォームを作る
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            # エラーがなければユーザーをデータベースに保存
+            user = form.save()
+            # 登録後、そのまま自動でログイン状態にする
+            login(request, user)
+            # トップページ（index）へ移動させる
+            return redirect('index')
+    else:
+        # 普通にアクセスした時は、空の入力画面を表示する
+        form = UserCreationForm()
+    
+    return render(request, 'anime/signup.html', {'form': form})

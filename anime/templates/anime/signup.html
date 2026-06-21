@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>新規登録 | Anime Portfolio</title>
+</head>
+<body>
+    <h1>新規会員登録</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <button type="submit">登録して始める</button>
+    </form>
+    
+    <p><a href="{% url 'index' %}">トップページに戻る</a></p>
+</body>
+</html>
