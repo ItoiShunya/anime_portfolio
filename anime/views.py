@@ -8,9 +8,14 @@ from .services import analyze_anime_synopsis, generate_user_recommendations
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 
 
-# ファイルの一番下に追加
+@login_required
+def index(request):
+    # ここに書かれている既存の処理はそのまま変更しないでください
+    # ...
+    return render(request, 'anime/index.html', context)
 
 def index(request):
     # 1. Jikan APIから「今期放送中のアニメ」を取得
