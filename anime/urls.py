@@ -14,6 +14,9 @@ urlpatterns = [
     
     #サインアップ用のURL
     path('signup/', views.signup, name='signup'),
-    
+
+    # ログイン・ログアウト用のパスを追加
+    path('login/', LoginView.as_view(template_name='anime/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     
 ]
