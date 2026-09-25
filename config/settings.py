@@ -139,3 +139,6 @@ LOGIN_REDIRECT_URL = 'anime:index'
 
 # ログアウト時のリダイレクト先（ログイン画面に戻す場合）
 LOGOUT_REDIRECT_URL = 'anime:login'
+
+# 追加：未ログイン状態でアクセス制限のあるページに来た時の飛ばし先
+LOGIN_URL = 'anime:login'
