@@ -44,6 +44,19 @@
 </head>
 <body>
 
+    <div style="text-align: right; padding: 10px; background-color: #f0f0f0;">
+        {% if user.is_authenticated %}
+            <span>ようこそ、{{ user.username }}さん！</span>
+            <form action="{% url 'anime:logout' %}" method="post" style="display:inline; margin-left: 10px;">
+                {% csrf_token %}
+                <button type="submit">ログアウト</button>
+            </form>
+        {% else %}
+            <a href="{% url 'anime:login' %}">ログイン</a> | 
+            <a href="{% url 'anime:signup' %}">新規登録</a>
+        {% endif %}
+    </div>
+
     {% if not user.is_authenticated %}
         <div style="background-color: #ffebee; color: #c62828; padding: 10px; margin-bottom: 20px; border-radius: 4px; font-weight: bold;">
             ※評価を保存するには、あらかじめ http://127.0.0.1:8000/admin/ から管理者アカウントでログインしてください。
