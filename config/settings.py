@@ -133,3 +133,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# ログイン成功時のリダイレクト先
+LOGIN_REDIRECT_URL = 'anime:index'
+
+# ログアウト時のリダイレクト先（ログイン画面に戻す場合）
+LOGOUT_REDIRECT_URL = 'anime:login'
