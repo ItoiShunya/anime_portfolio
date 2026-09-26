@@ -13,41 +13,27 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def index(request):
-    # ここに書かれている既存の処理はそのまま変更しないでください
-    # ...
-    return render(request, 'anime/index.html', context)
-
-def index(request):
-    # 1. Jikan APIから「今期放送中のアニメ」を取得
     now_url = "https://api.jikan.moe/v4/seasons/now"
     now_response = requests.get(now_url)
     anime_list = []
     if now_response.status_code == 200:
         anime_list = now_response.json().get("data", [])
-        
-    # 2. Jikan APIから「歴代の人気トップアニメ」を取得
+
     top_url = "https://api.jikan.moe/v4/top/anime"
     top_response = requests.get(top_url)
     top_anime_list = []
     if top_response.status_code == 200:
         top_anime_list = top_response.json().get("data", [])
-        
-    recommendations = []
-    # 3. ログインしている場合のみ自分のレビューと「おすすめ」を取得
-    if request.user.is_authenticated:
-        reviews = AnimeReview.objects.filter(user=request.user).order_by('-created_at')
-        
-        # 今期アニメと歴代トップアニメを合体させた候補リストをAIに渡す！
-        combined_candidates = anime_list + top_anime_list
-        recommendations = generate_user_recommendations(request.user, combined_candidates)
-    else:
-        reviews = []
-        
+
+    reviews = AnimeReview.objects.filter(user=request.user).order_by('-created_at')
+    combined_candidates = anime_list + top_anime_list
+    recommendations = generate_user_recommendations(request.user, combined_candidates)
+
     context = {
         'reviews': reviews,
         'anime_list': anime_list,
-        'top_anime_list': top_anime_list, # 画面に歴代リストも送る
-        'recommendations': recommendations, 
+        'top_anime_list': top_anime_list,
+        'recommendations': recommendations,
     }
     return render(request, 'anime/index.html', context)
 
