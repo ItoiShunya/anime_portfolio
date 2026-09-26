@@ -70,7 +70,7 @@ def save_review(request):
 
             analyze_anime_synopsis(anime)
             
-    return redirect('index')
+    return redirect('anime:index')
 
 @login_required
 def delete_review(request, review_id):
@@ -81,7 +81,7 @@ def delete_review(request, review_id):
             review.delete()
             
     # 削除が終わったら、トップ画面（index）に戻る
-    return redirect('index')
+    return redirect('anime:index')
 
 def signup(request):
     if request.method == 'POST':
@@ -93,7 +93,7 @@ def signup(request):
             # 登録後、そのまま自動でログイン状態にする
             login(request, user)
             # トップページ（index）へ移動させる
-            return redirect('index')
+            return redirect('anime:index')
     else:
         # 普通にアクセスした時は、空の入力画面を表示する
         form = UserCreationForm()
