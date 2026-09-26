@@ -153,7 +153,7 @@
                 <h3 style="margin-top: 10px;">{{ review.anime.title }}</h3>
                 <p><strong>あなたの評価:</strong> ★{{ review.rating }} / 5</p>
                 <p style="font-size: 0.8em; color: #666;">登録日: {{ review.created_at|date:"Y/m/d" }}</p>
-                <form action="{% url 'delete_review' review.id %}" method="POST" style="margin-top: 10px;" onsubmit="return confirm('「{{ review.anime.title }}」のレビューを本当に削除しますか？');">
+                <form action="{% url 'anime:delete_review' review.id %}" method="POST" style="margin-top: 10px;" onsubmit="return confirm('「{{ review.anime.title }}」のレビューを本当に削除しますか？');">
                     {% csrf_token %}
                     <button type="submit" style="width: 100%; padding: 5px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">
                         🗑️ 削除する
